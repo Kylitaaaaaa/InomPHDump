@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "548443395677",
+    "firebase_url": "https://inomphdump.firebaseio.com",
+    "project_id": "inomphdump",
+    "storage_bucket": "inomphdump.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:548443395677:android:14e160c76813860a",
+        "android_client_info": {
+          "package_name": "com.thea.inomphdump"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "548443395677-ltum6ai1j8g9412opvftgj5atirb28bs.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9IQzE2VHE8E7aSCSPcXHtK_--oHB3YX4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

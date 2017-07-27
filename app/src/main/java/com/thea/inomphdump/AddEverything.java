@@ -2,13 +2,16 @@ package com.thea.inomphdump;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
@@ -61,6 +64,7 @@ public class AddEverything {
     public static final String PRODUCT_RICHNESS = "richness";
     public static final String PRODUCT_SMOKE = "smoke";
     public static final String PRODUCT_SWEETNESS = "sweetness";
+    public static final String PRODUCT_PIC = "picture";
     public static final String PRODUCT_ORDERLIST_ID = "orderlist_id";
     public static final String PRODUCT_RATINGLIST_ID = "ratinglist_id";
 
@@ -82,64 +86,77 @@ public class AddEverything {
         rating
          */
 
-        //Adding Admin info
-        mDatabaseAdmin = database.getReference().child(ADMIN_TABLE_NAME);
-        DatabaseReference newAdmin = mDatabaseAdmin.push();
+        StorageReference mStorage = FirebaseStorage.getInstance().getReference();
+        mStorage.child("beer1.jpg").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                // Got the download URL for 'users/me/profile.png'
+//                Uri downloadUri = taskSnapshot.getMetadata().getDownloadUrl();
+//                generatedFilePath = downloadUri.toString(); /// The string(file link) that you need
+                Log.i("huh", "image " + uri.toString());
 
-        newAdmin.child(ADMIN_USERNAME).setValue("username");
-        newAdmin.child(ADMIN_PASSWORD).setValue("password");
+                //Adding Categry info
+                mDatabaseCategory = database.getReference().child(CATEGORY_TABLE_NAME);
+                DatabaseReference newCat = mDatabaseCategory.push();
+                newCat.child(CATEGORY_NAME).setValue("category1");
+                newCat.child(CATEGORY_PRODUCTSLIST).child(newCat.getKey().toString()).setValue(newCat.getKey().toString());
 
-        //Adding Categry info
-        mDatabaseCategory = database.getReference().child(CATEGORY_TABLE_NAME);
-        DatabaseReference newCat = mDatabaseCategory.push();
-        newCat.child(CATEGORY_NAME).setValue("category1");
+                //Adding Product
+                mDatabaseProduct = database.getReference().child(PRODUCT_TABLE_NAME);
+                DatabaseReference newProd = mDatabaseProduct.push();
+                newProd.child(PRODUCT_CATEGORY_ID).setValue(newCat.getKey().toString());
+                newProd.child(PRODUCT_NAME).setValue("name");
+                newProd.child(PRODUCT_VOLUME).setValue("volume");
+                newProd.child(PRODUCT_PRICE).setValue("price");
+                newProd.child(PRODUCT_QTY).setValue("qty");
+                newProd.child(PRODUCT_BOTTLER).setValue("bottler");
+                newProd.child(PRODUCT_AGE).setValue("age");
+                newProd.child(PRODUCT_COUNTRY).setValue("country");
+                newProd.child(PRODUCT_REGION).setValue("region");
+                newProd.child(PRODUCT_ESSENCE).setValue("essence");
+                newProd.child(PRODUCT_RICHNESS).setValue("richness");
+                newProd.child(PRODUCT_SMOKE).setValue("smoke");
+                newProd.child(PRODUCT_SWEETNESS).setValue("sweetness");
+                newProd.child(PRODUCT_PIC).setValue(uri.toString());
 
-        //Adding Customer
-        mDatabaseCustomer = database.getReference().child(CUSTOMER_TABLE_NAME);
-        DatabaseReference newCust = mDatabaseCustomer.push();
-        newCust.child(CUSTOMER_FNAME).setValue("fname");
-        newCust.child(CUSTOMER_MNAME).setValue("mname");
-        newCust.child(CUSTOMER_LNAME).setValue("lname");
-        newCust.child(CUSTOMER_EMAIL).setValue("email");
-        newCust.child(CUSTOMER_HOME_NUM).setValue("home_num");
-        newCust.child(CUSTOMER_HOME_STREET).setValue("home_street");
-        newCust.child(CUSTOMER_HOME_CITY).setValue("city");
-        newCust.child(CUSTOMER_HOME_POSTCODE).setValue("postcode");
 
-        //Adding Product
-        mDatabaseProduct = database.getReference().child(PRODUCT_TABLE_NAME);
-        DatabaseReference newProd = mDatabaseProduct.push();
-        newProd.child(PRODUCT_CATEGORY_ID).setValue(newCat.getKey().toString());
-        newProd.child(PRODUCT_NAME).setValue("name");
-        newProd.child(PRODUCT_VOLUME).setValue("volume");
-        newProd.child(PRODUCT_PRICE).setValue("price");
-        newProd.child(PRODUCT_QTY).setValue("qty");
-        newProd.child(PRODUCT_BOTTLER).setValue("bottler");
-        newProd.child(PRODUCT_AGE).setValue("age");
-        newProd.child(PRODUCT_COUNTRY).setValue("country");
-        newProd.child(PRODUCT_REGION).setValue("region");
-        newProd.child(PRODUCT_ESSENCE).setValue("essence");
-        newProd.child(PRODUCT_RICHNESS).setValue("richness");
-        newProd.child(PRODUCT_SMOKE).setValue("smoke");
-        newProd.child(PRODUCT_SWEETNESS).setValue("sweetness");
-        newCat.child(CATEGORY_PRODUCTSLIST).child(newCat.getKey().toString()).setValue(newCat.getKey().toString());
+                //Adding Customer
+                mDatabaseCustomer = database.getReference().child(CUSTOMER_TABLE_NAME);
+                DatabaseReference newCust = mDatabaseCustomer.push();
+                newCust.child(CUSTOMER_FNAME).setValue("fname");
+                newCust.child(CUSTOMER_MNAME).setValue("mname");
+                newCust.child(CUSTOMER_LNAME).setValue("lname");
+                newCust.child(CUSTOMER_EMAIL).setValue("email");
+                newCust.child(CUSTOMER_HOME_NUM).setValue("home_num");
+                newCust.child(CUSTOMER_HOME_STREET).setValue("home_street");
+                newCust.child(CUSTOMER_HOME_CITY).setValue("city");
+                newCust.child(CUSTOMER_HOME_POSTCODE).setValue("postcode");
 
-        //Adding Order
-        mDatabaseOrder = database.getReference().child(ORDER_TABLE_NAME);
-        DatabaseReference newOrder = mDatabaseOrder.push();
-        newOrder.child(ORDER_CUSTOMER_ID).setValue(newCust.getKey().toString());
-        newOrder.child(ORDER_PRODUCT_ID).setValue(newProd.getKey().toString());
-        newOrder.child(ORDER_QTY).setValue("100");
-        newProd.child(PRODUCT_ORDERLIST_ID).child(newOrder.getKey().toString()).setValue(newOrder.getKey().toString());
-        newCust.child(CUSTOMER_ORDERLIST_ID).child(newOrder.getKey().toString()).setValue(newOrder.getKey().toString());
+                //Adding Order
+                mDatabaseOrder = database.getReference().child(ORDER_TABLE_NAME);
+                DatabaseReference newOrder = mDatabaseOrder.push();
+                newOrder.child(ORDER_CUSTOMER_ID).setValue(newCust.getKey().toString());
+                newOrder.child(ORDER_PRODUCT_ID).setValue(newProd.getKey().toString());
+                newOrder.child(ORDER_QTY).setValue("100");
+                newProd.child(PRODUCT_ORDERLIST_ID).child(newOrder.getKey().toString()).setValue(newOrder.getKey().toString());
+                newCust.child(CUSTOMER_ORDERLIST_ID).child(newOrder.getKey().toString()).setValue(newOrder.getKey().toString());
 
-        //Adding Rating
-        mDatabaseRating = database.getReference().child(RATING_TABLE_NAME);
-        DatabaseReference newRating = mDatabaseRating.push();
-        newRating.child(RATING_RATING).setValue("sample");
-        newRating.child(RATING_PRODUCT_ID).setValue(newProd.getKey().toString());
-        newRating.child(RATING_CUSTOMER_ID).setValue(newCust.getKey().toString());
-        newProd.child(PRODUCT_RATINGLIST_ID).child(newRating.getKey().toString()).setValue(newRating.getKey().toString());
+                //Adding Rating
+                mDatabaseRating = database.getReference().child(RATING_TABLE_NAME);
+                DatabaseReference newRating = mDatabaseRating.push();
+                newRating.child(RATING_RATING).setValue("sample");
+                newRating.child(RATING_PRODUCT_ID).setValue(newProd.getKey().toString());
+                newRating.child(RATING_CUSTOMER_ID).setValue(newCust.getKey().toString());
+                newProd.child(PRODUCT_RATINGLIST_ID).child(newRating.getKey().toString()).setValue(newRating.getKey().toString());
+            }
+
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+                Log.i("huh", "aww");
+            }
+        });
 
         Log.i("done", "done");
 

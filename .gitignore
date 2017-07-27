@@ -7,3 +7,7 @@
 /build
 /captures
 .externalNativeBuild
+
+*.xml
+
+app/src/main/res/layout/activity_main.xml
